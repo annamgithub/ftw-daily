@@ -3,8 +3,9 @@ const { getSdk, getTrustedSdk, handleError, serialize } = require('../api-util/s
 
 module.exports = (req, res) => {
   const { isSpeculative, bookingData, bodyParams, queryParams } = req.body;
+  console.log('transition privileged', req.body);
 
-  const listingId = bodyParams && bodyParams.params ? bodyParams.params.listingId : null;
+  const { listingId, ...restParams } = bodyParams && bodyParams.params ? bodyParams.params : {};
 
   const sdk = getSdk(req, res);
   let lineItems = null;
@@ -24,15 +25,15 @@ module.exports = (req, res) => {
       const body = {
         ...bodyParams,
         params: {
-          ...params,
+          ...restParams,
           lineItems,
         },
       };
 
       if (isSpeculative) {
-        return trustedSdk.transactions.initiateSpeculative(body, queryParams);
+        return trustedSdk.transactions.transitionSpeculative(body, queryParams);
       }
-      return trustedSdk.transactions.initiate(body, queryParams);
+      return trustedSdk.transactions.transition(body, queryParams);
     })
     .then(apiResponse => {
       const { status, statusText, data } = apiResponse;

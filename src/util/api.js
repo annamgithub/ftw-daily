@@ -86,3 +86,8 @@ export const transactionLineItems = body => {
 export const initiatePrivileged = body => {
   return post('/api/initiate-privileged', body);
 };
+
+// TODO: docs
+export const transitionPrivileged = body => {
+  return post('/api/transition-privileged', body);
+};
